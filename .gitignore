@@ -1,10 +1,12 @@
 HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### STS ###
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -12,12 +14,6 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,6 +28,25 @@ build/
 ### VS Code ###
 .vscode/
 
+### Maven ###
+target/
 
+### Environment / Secrets ###
+.env
+.env.local
+.env.*.local
+*.local
+dev-config.txt
+hyperlocal-dev-config.txt
 
+### Logs ###
+*.log
+logs/
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Flyway local history (if generated) ###
+.flyway/
 docs/

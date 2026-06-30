@@ -1,0 +1,79 @@
+# ============================================================
+# Hyperlocal Delivery Backend — Application Configuration
+# ============================================================
+# This file configures Spring Boot behavior.
+# Sensitive values are injected from environment variables at startup.
+# ============================================================
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: delivery
+
+  # Database connection settings
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/hyperlocal_delivery?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA / Hibernate settings
+  jpa:
+    hibernate:
+      # DO NOT let Hibernate modify the schema — Flyway handles schema.
+      # Phase 1: 'none' (no schema validation yet)
+      # Phase 3+: switch to 'validate' (verify entities match schema)
+      ddl-auto: none
+    # Log generated SQL queries (useful during development)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    # CRITICAL: disable to avoid lazy-loading pitfalls outside transactions
+    open-in-view: false
+
+  # Flyway database migrations
+  flyway:
+    # Phase 1: disabled (no migrations yet)
+    # Phase 2: enable when V1__init_schema.sql is written
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# Application-specific JWT settings (custom properties)
+app:
+  jwt:
+    # 256-bit secret for signing tokens — MUST be set via JWT_SECRET env var
+    secret: ${JWT_SECRET}
+    # Access token lifetime: 24 hours (in milliseconds)
+    access-token-expiration-ms: 86400000
+    # Refresh token lifetime: 7 days (in milliseconds)
+    refresh-token-expiration-ms: 604800000
+  cors:
+    # Comma-separated list of allowed origins (frontend URLs)
+    # For local dev, allow anything. In production, restrict to actual domain.
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+# Spring Boot Actuator — management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        # Only expose health + info publicly; everything else remains private
+        include: health,info
+  endpoint:
+    health:
+      # Don't show detailed health info (hides DB connection string etc.)
+      show-details: never
+
+# Logging configuration
+logging:
+  level:
+    # Default level for the entire app
+    root: INFO
+    # More verbose for our code (helpful during development)
+    com.hyperlocal.delivery: DEBUG
+    # Log SQL parameters (shows WHAT values are in the queries, not just the SQL)
+    org.hibernate.orm.jdbc.bind: TRACE
